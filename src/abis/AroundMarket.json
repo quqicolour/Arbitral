@@ -1,0 +1,875 @@
+{
+  "contractName": "AroundMarket",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "AlreadyInitialize",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "AlreadyWithdraw",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InsufficientBalance",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidLpShare",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidOutput",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidRandomNumber",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidState",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidVirtualAmount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "LiquidityWayClosed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MarketClosed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NonMultiSig",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotTimeYet",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotWithdrawTime",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "SafeERC20FailedOperation",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TouchAroundErr",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TouchOracleErr",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ZeroAddress",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ZeroAmount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ZeroParticipant",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "lpProvider",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "AddLiqudity",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "buyer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum IAroundMarket.Result",
+          "name": "bet",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Buy",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "thisNewMarketId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
+        }
+      ],
+      "name": "CreateNewMarket",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Release",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "lpProvider",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "lpAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "RemoveLiqudity",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "seller",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum IAroundMarket.Result",
+          "name": "bet",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Sell",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "Min_Lucky_Volume",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint128",
+          "name": "amount",
+          "type": "uint128"
+        }
+      ],
+      "name": "addLiquidity",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "aroundPoolFactory",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IAroundMarket.Result",
+          "name": "bet",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint128",
+          "name": "amount",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "buy",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newFeeReceiver",
+          "type": "address"
+        }
+      ],
+      "name": "changeFeeReceiver",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint32",
+              "name": "period",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint128",
+              "name": "expectVirtualLiquidity",
+              "type": "uint128"
+            },
+            {
+              "internalType": "string",
+              "name": "quest",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "thisMarketId",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IAroundMarket.CreateMarketParams",
+          "name": "params",
+          "type": "tuple"
+        }
+      ],
+      "name": "createMarket",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "feeReceiver",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getFeeInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint16",
+              "name": "officialFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "luckyFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "oracleFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "creatorFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "liquidityFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "totalFee",
+              "type": "uint16"
+            }
+          ],
+          "internalType": "struct IAroundPoolFactory.FeeInfo",
+          "name": "thisFeeInfo",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getLiqudityInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "virtualLiquidity",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "tradeCollateralAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "lpCollateralAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "liquidityFeeAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalLp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "yesAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "noAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IAroundMarket.LiqudityInfo",
+          "name": "thisLiqudityInfo",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getMarketInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "enum IAroundMarket.Result",
+              "name": "result",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bool",
+              "name": "ifOpenAave",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint16",
+              "name": "participants",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint64",
+              "name": "startTime",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "endTime",
+              "type": "uint64"
+            },
+            {
+              "internalType": "address",
+              "name": "collateral",
+              "type": "address"
+            },
+            {
+              "internalType": "uint64",
+              "name": "totalRaffleTicket",
+              "type": "uint64"
+            },
+            {
+              "internalType": "address",
+              "name": "creator",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "quest",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct IAroundMarket.MarketInfo",
+          "name": "thisMarketInfo",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "getUserParticipateIdsLen",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getUserPosition",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint64",
+              "name": "raffleTicketNumber",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint128",
+              "name": "collateralAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint256",
+              "name": "yesBalance",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "noBalance",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IAroundMarket.UserPosition",
+          "name": "thisUserPosition",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "indexUserParticipateId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "participateId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "thisMultiSig",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "thisAroundPoolFactory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "thisOracle",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isInitialize",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "multiSig",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "oracle",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "name": "raffleTicketToUser",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "redeemWinnings",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "winnings",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint128",
+          "name": "lpAmount",
+          "type": "uint128"
+        }
+      ],
+      "name": "removeLiquidity",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IAroundMarket.Result",
+          "name": "bet",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "sell",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint32",
+          "name": "newDefaultVirtualLiquidity",
+          "type": "uint32"
+        }
+      ],
+      "name": "setDefaultVirtualLiquidity",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "setInvalidMarket",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "state",
+          "type": "bool"
+        }
+      ],
+      "name": "setMarketOpenAave",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "ifOpenAave",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "touchAllot",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}

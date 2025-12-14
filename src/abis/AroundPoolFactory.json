@@ -1,0 +1,571 @@
+{
+  "contractName": "AroundPoolFactory",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "thisPool",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "thisAToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "thisAaveProtocolDataProvider",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "Create2EmptyBytecode",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FailedDeployment",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "balance",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "needed",
+          "type": "uint256"
+        }
+      ],
+      "name": "InsufficientBalance",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidToken",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "aroundMarket",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "officialFee",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint16",
+          "name": "liquidityFee",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint16",
+          "name": "oracleFee",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint16",
+          "name": "luckyFee",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint16",
+          "name": "creatorFee",
+          "type": "uint16"
+        }
+      ],
+      "name": "changeBaseFee",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum IAroundPoolFactory.MarketType",
+          "name": "newMarketType",
+          "type": "uint8"
+        }
+      ],
+      "name": "changeMarketType",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IAroundPoolFactory.MarketType",
+          "name": "marketType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "address",
+          "name": "collateral",
+          "type": "address"
+        }
+      ],
+      "name": "createPool",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "elf",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAaveInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bool",
+              "name": "isClosedAave",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint16",
+              "name": "referralCode",
+              "type": "uint16"
+            },
+            {
+              "internalType": "address",
+              "name": "pool",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "aToken",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "aaveProtocolDataProvider",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct IAroundPoolFactory.AaveInfo",
+          "name": "thisAaveInfo",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "elfHolder",
+          "type": "address"
+        }
+      ],
+      "name": "getFeeInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint16",
+              "name": "officialFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "luckyFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "oracleFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "creatorFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "liquidityFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "totalFee",
+              "type": "uint16"
+            }
+          ],
+          "internalType": "struct IAroundPoolFactory.FeeInfo",
+          "name": "thisFeeInfo",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IAroundPoolFactory.MarketType",
+          "name": "marketType",
+          "type": "uint8"
+        }
+      ],
+      "name": "getMarketGroupLength",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "getMarketPlace",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "enum IAroundPoolFactory.MarketType",
+              "name": "marketType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "place",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IAroundPoolFactory.MarketPlace",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getPoolInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "collateral",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "aroundPool",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "luckyPool",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct IAroundPoolFactory.PoolInfo",
+          "name": "thisPoolInfo",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "getTokenInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bool",
+              "name": "valid",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint128",
+              "name": "createFeeAmount",
+              "type": "uint128"
+            }
+          ],
+          "internalType": "struct IAroundPoolFactory.TokenInfo",
+          "name": "thisTokenInfo",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IAroundPoolFactory.MarketType",
+          "name": "marketType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "indexMarketTypeData",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_aroundMarket",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isInitialize",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "marketId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "state",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint16",
+          "name": "newReferralCode",
+          "type": "uint16"
+        },
+        {
+          "internalType": "address",
+          "name": "thisPool",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "thisAToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "thisAaveProtocolDataProvider",
+          "type": "address"
+        }
+      ],
+      "name": "setAaveInfo",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_elf",
+          "type": "address"
+        }
+      ],
+      "name": "setElf",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "state",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint128",
+          "name": "amount",
+          "type": "uint128"
+        }
+      ],
+      "name": "setTokenInfo",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}

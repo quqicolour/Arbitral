@@ -1,0 +1,196 @@
+{
+  "contractName": "AroundPool",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "thisAroundMarket",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "thisToken",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "SafeERC20FailedOperation",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "thisToken",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "thisReceiver",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "thisAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Touch",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "inValidMarket",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "ifOpenAave",
+          "type": "bool"
+        }
+      ],
+      "name": "allot",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "aroundMarket",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "aroundPoolFactory",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "ifOpenAave",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint128",
+          "name": "amountIn",
+          "type": "uint128"
+        }
+      ],
+      "name": "deposite",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAavePoolPaused",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "isPaused",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "reserveInfo",
+      "outputs": [
+        {
+          "internalType": "uint128",
+          "name": "lentOut",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "balance",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "totalCollateralAmount",
+          "type": "uint128"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "ifEnd",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "ifOpenAave",
+          "type": "bool"
+        },
+        {
+          "internalType": "address",
+          "name": "receiver",
+          "type": "address"
+        },
+        {
+          "internalType": "uint128",
+          "name": "amountOut",
+          "type": "uint128"
+        }
+      ],
+      "name": "touch",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}

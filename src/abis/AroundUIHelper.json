@@ -1,0 +1,991 @@
+{
+  "contractName": "AroundUIHelper",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_aroundMarket",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_aroundPoolFactory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_echoOptimisticOracle",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidVirtualAmount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "aroundMarket",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "aroundPoolFactory",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "size",
+          "type": "uint256"
+        }
+      ],
+      "name": "batchIndexMarketData",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "collateral",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "aroundPool",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "luckyPool",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct IAroundPoolFactory.PoolInfo[]",
+          "name": "poolInfoGroup",
+          "type": "tuple[]"
+        },
+        {
+          "components": [
+            {
+              "internalType": "enum IAroundMarket.Result",
+              "name": "result",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bool",
+              "name": "ifOpenAave",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint16",
+              "name": "participants",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint64",
+              "name": "startTime",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "endTime",
+              "type": "uint64"
+            },
+            {
+              "internalType": "address",
+              "name": "collateral",
+              "type": "address"
+            },
+            {
+              "internalType": "uint64",
+              "name": "totalRaffleTicket",
+              "type": "uint64"
+            },
+            {
+              "internalType": "address",
+              "name": "creator",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "quest",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct IAroundMarket.MarketInfo[]",
+          "name": "marketInfoGroup",
+          "type": "tuple[]"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "virtualLiquidity",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "tradeCollateralAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "lpCollateralAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "liquidityFeeAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalLp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "yesAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "noAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IAroundMarket.LiqudityInfo[]",
+          "name": "liqudityInfoGroup",
+          "type": "tuple[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "yesPriceGroup",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "noPriceGroup",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IAroundPoolFactory.MarketType",
+          "name": "marketType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "size",
+          "type": "uint256"
+        }
+      ],
+      "name": "batchIndexMarketTypeData",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "collateral",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "aroundPool",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "luckyPool",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct IAroundPoolFactory.PoolInfo[]",
+          "name": "poolInfoGroup",
+          "type": "tuple[]"
+        },
+        {
+          "components": [
+            {
+              "internalType": "enum IAroundMarket.Result",
+              "name": "result",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bool",
+              "name": "ifOpenAave",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint16",
+              "name": "participants",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint64",
+              "name": "startTime",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "endTime",
+              "type": "uint64"
+            },
+            {
+              "internalType": "address",
+              "name": "collateral",
+              "type": "address"
+            },
+            {
+              "internalType": "uint64",
+              "name": "totalRaffleTicket",
+              "type": "uint64"
+            },
+            {
+              "internalType": "address",
+              "name": "creator",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "quest",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct IAroundMarket.MarketInfo[]",
+          "name": "marketInfoGroup",
+          "type": "tuple[]"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "virtualLiquidity",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "tradeCollateralAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "lpCollateralAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "liquidityFeeAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalLp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "yesAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "noAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IAroundMarket.LiqudityInfo[]",
+          "name": "liqudityInfoGroup",
+          "type": "tuple[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "yesPriceGroup",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "noPriceGroup",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "size",
+          "type": "uint256"
+        }
+      ],
+      "name": "batchIndexUserParticipateIdsInfo",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "idGroup",
+          "type": "uint256[]"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint64",
+              "name": "raffleTicketNumber",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint128",
+              "name": "collateralAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint256",
+              "name": "yesBalance",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "noBalance",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IAroundMarket.UserPosition[]",
+          "name": "userPositionGroup",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "echoOptimisticOracle",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum IAroundMarket.Result",
+          "name": "_bet",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint128",
+          "name": "amountIn",
+          "type": "uint128"
+        }
+      ],
+      "name": "getBuySlippage",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "getDecimals",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint128",
+          "name": "expectVirtualAmount",
+          "type": "uint128"
+        }
+      ],
+      "name": "getGuardedAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lpAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "getLiquidityRemoval",
+      "outputs": [
+        {
+          "internalType": "uint128",
+          "name": "collateralAmount",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "feeShare",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalValue",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint128",
+          "name": "value",
+          "type": "uint128"
+        }
+      ],
+      "name": "getLiquidityShares",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "yesShare",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "noShare",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        }
+      ],
+      "name": "getLiquidityValue",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "totalValue",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint128",
+          "name": "value",
+          "type": "uint128"
+        }
+      ],
+      "name": "getLpSharesToMint",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getNoPrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum IAroundMarket.Result",
+          "name": "_bet",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint128",
+          "name": "sellAmount",
+          "type": "uint128"
+        }
+      ],
+      "name": "getSellSlippage",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        }
+      ],
+      "name": "getTokenBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getYesPrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "indexMarketData",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "collateral",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "aroundPool",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "luckyPool",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct IAroundPoolFactory.PoolInfo",
+          "name": "thisPoolInfo",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint16",
+              "name": "officialFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "luckyFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "oracleFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "creatorFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "liquidityFee",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "totalFee",
+              "type": "uint16"
+            }
+          ],
+          "internalType": "struct IAroundPoolFactory.FeeInfo",
+          "name": "thisFeeInfo",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "enum IAroundMarket.Result",
+              "name": "result",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bool",
+              "name": "ifOpenAave",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint16",
+              "name": "participants",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint64",
+              "name": "startTime",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "endTime",
+              "type": "uint64"
+            },
+            {
+              "internalType": "address",
+              "name": "collateral",
+              "type": "address"
+            },
+            {
+              "internalType": "uint64",
+              "name": "totalRaffleTicket",
+              "type": "uint64"
+            },
+            {
+              "internalType": "address",
+              "name": "creator",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "quest",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct IAroundMarket.MarketInfo",
+          "name": "thisMarketInfo",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "virtualLiquidity",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "tradeCollateralAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "lpCollateralAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "liquidityFeeAmount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalLp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "yesAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "noAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IAroundMarket.LiqudityInfo",
+          "name": "thisLiqudityInfo",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "enum IEchoOptimisticOracle.EventState",
+              "name": "eventState",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum IEchoOptimisticOracle.OracleWithdrawState",
+              "name": "withdrawState",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint16",
+              "name": "yesVote",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "noVote",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint64",
+              "name": "randomNumber",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "updateTime",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint256",
+              "name": "earn",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "quest",
+              "type": "string"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "enum IEchoOptimisticOracle.OracleState",
+                  "name": "state",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "isDisputePass",
+                  "type": "bool"
+                },
+                {
+                  "internalType": "uint16",
+                  "name": "disputeVotes",
+                  "type": "uint16"
+                },
+                {
+                  "internalType": "uint16",
+                  "name": "responseCount",
+                  "type": "uint16"
+                },
+                {
+                  "internalType": "address",
+                  "name": "challenger",
+                  "type": "address"
+                },
+                {
+                  "internalType": "string",
+                  "name": "evidence",
+                  "type": "string"
+                },
+                {
+                  "internalType": "address[]",
+                  "name": "providers",
+                  "type": "address[]"
+                },
+                {
+                  "internalType": "address[]",
+                  "name": "investigators",
+                  "type": "address[]"
+                }
+              ],
+              "internalType": "struct IEchoOptimisticOracle.OptimisticInfo",
+              "name": "optimisticInfo",
+              "type": "tuple"
+            }
+          ],
+          "internalType": "struct IEchoOptimisticOracle.OracleInfo",
+          "name": "thisOracleInfo",
+          "type": "tuple"
+        },
+        {
+          "internalType": "uint256",
+          "name": "thisYesPrice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "thisNoPrice",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}
