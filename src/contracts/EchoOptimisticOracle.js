@@ -1,4 +1,4 @@
-const RegistProvider = async (echoOptimisticOracle) => {
+async function RegistProvider(echoOptimisticOracle) {
   try {
     const registProvider = await echoOptimisticOracle.registProvider();
     const registProviderTx = await registProvider.wait();
@@ -6,9 +6,9 @@ const RegistProvider = async (echoOptimisticOracle) => {
   } catch (e) {
     console.log("registProvider fail:", e);
   }
-};
+}
 
-const Exit = async (echoOptimisticOracle) => {
+async function Exit(echoOptimisticOracle) {
   try {
     const exit = await echoOptimisticOracle.exit();
     const exitTx = await exit.wait();
@@ -16,9 +16,9 @@ const Exit = async (echoOptimisticOracle) => {
   } catch (e) {
     console.log("exit fail:", e);
   }
-};
+}
 
-const DisruptRandom = async (echoOptimisticOracle, id) => {
+async function DisruptRandom(echoOptimisticOracle, id) {
   try {
     const disruptRandom = await echoOptimisticOracle.disruptRandom(id);
     const disruptRandomTx = await disruptRandom.wait();
@@ -26,15 +26,15 @@ const DisruptRandom = async (echoOptimisticOracle, id) => {
   } catch (e) {
     console.log("disruptRandom fail:", e);
   }
-};
+}
 
-const SubmitData = async (
+async function SubmitData(
   echoOptimisticOracle,
   id,
   ifYes,
   randomNumber,
   dataSource
-) => {
+) {
   try {
     const submitData = await echoOptimisticOracle.submitData(
       id,
@@ -47,9 +47,9 @@ const SubmitData = async (
   } catch (e) {
     console.log("submitData fail:", e);
   }
-};
+}
 
-const Challenge = async (echoOptimisticOracle, id, evidence) => {
+async function Challenge(echoOptimisticOracle, id, evidence) {
   try {
     const challenge = await echoOptimisticOracle.challenge(id, evidence);
     const challengeTx = await challenge.wait();
@@ -57,9 +57,9 @@ const Challenge = async (echoOptimisticOracle, id, evidence) => {
   } catch (e) {
     console.log("challenge fail:", e);
   }
-};
+}
 
-const DisputeVote = async (echoOptimisticOracle, id) => {
+async function DisputeVote(echoOptimisticOracle, id) {
   try {
     const disputeVote = await echoOptimisticOracle.disputeVote(id);
     const disputeVoteTx = await disputeVote.wait();
@@ -67,9 +67,9 @@ const DisputeVote = async (echoOptimisticOracle, id) => {
   } catch (e) {
     console.log("disputeVote fail:", e);
   }
-};
+}
 
-const WithdrawEarn = async (echoOptimisticOracle, id) => {
+async function WithdrawEarn(echoOptimisticOracle, id) {
   try {
     const withdrawEarn = await echoOptimisticOracle.withdrawEarn(id);
     const withdrawEarnTx = await withdrawEarn.wait();
@@ -77,9 +77,9 @@ const WithdrawEarn = async (echoOptimisticOracle, id) => {
   } catch (e) {
     console.log("withdrawEarn fail:", e);
   }
-};
+}
 
-const WithdrawDispute = async (echoOptimisticOracle, id) => {
+async function WithdrawDispute(echoOptimisticOracle, id) {
   try {
     const withdrawDispute = await echoOptimisticOracle.withdrawDispute(id);
     const withdrawDisputeTx = await withdrawDispute.wait();
@@ -87,9 +87,9 @@ const WithdrawDispute = async (echoOptimisticOracle, id) => {
   } catch (e) {
     console.log("withdrawDispute fail:", e);
   }
-};
+}
 
-const GetOracleInfo = async (echoOptimisticOracle, id) => {
+async function GetOracleInfo(echoOptimisticOracle, id) {
   try {
     const oracleInfo = await echoOptimisticOracle.getOracleInfo(id);
     console.log("oracleInfo:", oracleInfo);
@@ -97,9 +97,9 @@ const GetOracleInfo = async (echoOptimisticOracle, id) => {
   } catch (e) {
     console.log("Get oracleInfo fail:", e);
   }
-};
+}
 
-const GetSubmitDataInfo = async (echoOptimisticOracle, user, id) => {
+async function GetSubmitDataInfo(echoOptimisticOracle, user, id) {
   try {
     const submitDataInfo = await echoOptimisticOracle.getSubmitDataInfo(
       user,
@@ -110,7 +110,7 @@ const GetSubmitDataInfo = async (echoOptimisticOracle, user, id) => {
   } catch (e) {
     console.log("Get submitDataInfo fail:", e);
   }
-};
+}
 
 export {
   RegistProvider,
@@ -122,5 +122,5 @@ export {
   WithdrawEarn,
   WithdrawDispute,
   GetOracleInfo,
-  GetSubmitDataInfo
+  GetSubmitDataInfo,
 };

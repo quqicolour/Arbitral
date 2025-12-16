@@ -190,6 +190,100 @@
           "type": "tuple[]"
         },
         {
+          "components": [
+            {
+              "internalType": "enum IEchoOptimisticOracle.EventState",
+              "name": "eventState",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum IEchoOptimisticOracle.OracleWithdrawState",
+              "name": "withdrawState",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint16",
+              "name": "yesVote",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "noVote",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint64",
+              "name": "randomNumber",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "updateTime",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint256",
+              "name": "earn",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "quest",
+              "type": "string"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "enum IEchoOptimisticOracle.OracleState",
+                  "name": "state",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "isDisputePass",
+                  "type": "bool"
+                },
+                {
+                  "internalType": "uint16",
+                  "name": "disputeVotes",
+                  "type": "uint16"
+                },
+                {
+                  "internalType": "uint16",
+                  "name": "responseCount",
+                  "type": "uint16"
+                },
+                {
+                  "internalType": "address",
+                  "name": "challenger",
+                  "type": "address"
+                },
+                {
+                  "internalType": "string",
+                  "name": "evidence",
+                  "type": "string"
+                },
+                {
+                  "internalType": "address[]",
+                  "name": "providers",
+                  "type": "address[]"
+                },
+                {
+                  "internalType": "address[]",
+                  "name": "investigators",
+                  "type": "address[]"
+                }
+              ],
+              "internalType": "struct IEchoOptimisticOracle.OptimisticInfo",
+              "name": "optimisticInfo",
+              "type": "tuple"
+            }
+          ],
+          "internalType": "struct IEchoOptimisticOracle.OracleInfo[]",
+          "name": "oracleInfo",
+          "type": "tuple[]"
+        },
+        {
           "internalType": "uint256[]",
           "name": "yesPriceGroup",
           "type": "uint256[]"
@@ -440,13 +534,76 @@
     {
       "inputs": [
         {
+          "internalType": "enum IAroundMarket.Result",
+          "name": "bet",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint128",
+          "name": "amountIn",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "estimateWinAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "winnings",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IAroundMarket.Result",
+          "name": "bet",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint128",
+          "name": "buyCollateralAmount",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getBuyOutput",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "output",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint128",
+          "name": "fee",
+          "type": "uint128"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256",
           "name": "thisMarketId",
           "type": "uint256"
         },
         {
           "internalType": "enum IAroundMarket.Result",
-          "name": "_bet",
+          "name": "bet",
           "type": "uint8"
         },
         {
@@ -581,7 +738,7 @@
         },
         {
           "internalType": "address",
-          "name": "_user",
+          "name": "user",
           "type": "address"
         }
       ],
@@ -642,13 +799,47 @@
     {
       "inputs": [
         {
+          "internalType": "enum IAroundMarket.Result",
+          "name": "bet",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint128",
+          "name": "sellShareAmount",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getSellOutput",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "output",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint128",
+          "name": "fee",
+          "type": "uint128"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256",
           "name": "thisMarketId",
           "type": "uint256"
         },
         {
           "internalType": "enum IAroundMarket.Result",
-          "name": "_bet",
+          "name": "bet",
           "type": "uint8"
         },
         {

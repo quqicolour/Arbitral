@@ -1,53 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAccount, useContractWrite } from 'wagmi';
 import { parseEther } from 'viem';
 
+import { UseEthersSigner } from "../config/EtherAdapter.js";
+import { ethers } from "ethers";
+
+import { EchoOptimisticOracleAddress, USDCAddress } from "../Address.js";
+import EchoOptimisticOracleABI from "../abis/EchoOptimisticOracle.json";
+import ERC20ABI from "../abis/ERC20.json";
+
+const RegisterFee = 10000n * 10n ** 18n;
+
 const RegisterProviderPage = () => {
   const { isConnected, address } = useAccount();
-  const [registrationFee, setRegistrationFee] = useState('0.1');
+  const [registrationFee, setRegistrationFee] = useState(10000);
   const [isRegistered, setIsRegistered] = useState(false);
   const [showRefundModal, setShowRefundModal] = useState(false);
 
-  // 模拟合约调用
-  const { config: registerConfig } = usePrepareContractWrite({
-    address: '0x0000000000000000000000000000000000000000', // 替换为实际合约地址
-    abi: [
-      {
-        name: 'registerProvider',
-        type: 'function',
-        stateMutability: 'payable',
-        inputs: [],
-        outputs: [{ type: 'bool' }],
-      },
-    ],
-    functionName: 'registerProvider',
-    value: parseEther(registrationFee),
-  });
+  const signer = UseEthersSigner();
 
-  const { write: register } = useContractWrite({
-    ...registerConfig,
-    onSuccess: () => {
-      setIsRegistered(true);
-      alert('Successfully registered as a provider!');
-    },
-    onError: (error) => {
-      alert(`Registration failed: ${error.message}`);
-    },
-  });
-
-  const handleRegister = () => {
-    if (!isConnected) {
-      alert('Please connect your wallet first');
-      return;
+  const USDC = useMemo(() => {
+    if(signer) {
+      return new ethers.Contract(
+        USDCAddress,
+        ERC20ABI.abi,
+        signer
+      );
     }
-    register?.();
+    return null;
+  }, [signer])
+
+  const EchoOptimisticOracle = useMemo(() => {
+    if (signer) { 
+      return new ethers.Contract(
+        EchoOptimisticOracleAddress,
+        EchoOptimisticOracleABI.abi,
+        signer 
+      );
+    }
+    return null;
+  }, [signer]); 
+
+  const handleRegister = async() => {
+    try{
+      if (isConnected) {
+        const currentAddress = await signer.getAddress();
+        //approve
+        const allowance = await USDC.allowance(currentAddress, EchoOptimisticOracleAddress);
+        if(allowance < RegisterFee) {
+          const approve = await USDC.approve(EchoOptimisticOracleAddress, RegisterFee);
+          const approveTx = await approve.wait();
+          if(approveTx.status === 1) {
+            console.log("Approve success");
+          }else {
+            console.log("Approve fail");
+          }
+        }else {
+          console.log("Not approve");
+        }
+
+        const registProvider = await EchoOptimisticOracle.registProvider();
+        const registProviderTx = await registProvider.wait();
+        if(registProviderTx.status === 1) {
+          console.log("Register provider success");
+        } else {
+          console.log("Register provider fail");
+        }
+      }else {
+        alert('Please connect your wallet first');
+      }
+    }catch(e) {
+      console.log("Register provider fail:", e);
+    }
   };
 
-  const handleRefund = () => {
-    // 这里应该调用退款合约
-    setShowRefundModal(false);
-    setIsRegistered(false);
-    alert('Refund processed successfully!');
+  const handleRefund = async() => {
+    try{
+      if (isConnected) {
+        const exit = await EchoOptimisticOracle.exit();
+        const exitTx = await exit.wait();
+        if(exitTx.status === 1) {
+          console.log("Refund success");
+        } else {
+          console.log("Refund fail");
+        }
+      }else {
+        alert('Please connect your wallet first');
+      }
+    }catch(e) {
+      console.log("Refund fail:", e);
+    }
   };
 
   return (
@@ -87,7 +129,7 @@ const RegisterProviderPage = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
                   <span className="text-emerald-700">Registration Fee</span>
-                  <span className="font-semibold text-emerald-700">{registrationFee} ETH</span>
+                  <span className="font-semibold text-emerald-700">{registrationFee} USDC</span>
                 </div>
                 
                 <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
@@ -114,7 +156,7 @@ const RegisterProviderPage = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  Register as Provider ({registrationFee} ETH)
+                  Register as Provider ({registrationFee} USDC)
                 </button>
               ) : (
                 <div className="mt-6 space-y-4">
@@ -192,7 +234,7 @@ const RegisterProviderPage = () => {
                   The registration fee is refundable if you choose to stop being a provider.
                 </p>
                 <p>
-                  Refunds are processed automatically within 7 business days.
+                  Refunds can only be processed if 7 days' worth of data is provided.
                 </p>
                 <p className="text-sm text-emerald-600">
                   Note: Any pending arbitration participation must be completed before refund processing.
@@ -227,7 +269,7 @@ const RegisterProviderPage = () => {
                 </p>
                 <ul className="mt-2 space-y-1 text-red-600 text-sm">
                   <li>• Remove your provider status</li>
-                  <li>• Refund {registrationFee} ETH to your wallet</li>
+                  <li>• Refund {registrationFee} USDC to your wallet</li>
                   <li>• Prevent participation in future markets</li>
                 </ul>
               </div>
