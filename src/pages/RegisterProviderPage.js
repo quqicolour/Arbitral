@@ -5,7 +5,7 @@ import { parseEther } from 'viem';
 import { UseEthersSigner } from "../config/EtherAdapter.js";
 import { ethers } from "ethers";
 
-import { EchoOptimisticOracleAddress, USDCAddress } from "../Address.js";
+import { EchoOptimisticOracleAddress, USDCAddress } from "../address.js";
 import EchoOptimisticOracleABI from "../abis/EchoOptimisticOracle.json";
 import ERC20ABI from "../abis/ERC20.json";
 

@@ -11,6 +11,7 @@ import { wagmiConfig } from './config/wagmi';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import ArbitrationPage from './pages/ArbitrationPage';
+import MarketDetailPage from './pages/MarketDetailPage';
 import RegisterProviderPage from './pages/RegisterProviderPage';
 import './App.css';
 
@@ -49,6 +50,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/arbitration" element={<ArbitrationPage />} />
+                  <Route path="/market/:id" element={<MarketDetailPage />} />
                   <Route path="/register-provider" element={<RegisterProviderPage />} />
                 </Routes>
               </Layout>
