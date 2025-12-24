@@ -16,8 +16,11 @@ const RegisterProviderPage = () => {
   const [registrationFee, setRegistrationFee] = useState(10000);
   const [isRegistered, setIsRegistered] = useState(false);
   const [showRefundModal, setShowRefundModal] = useState(false);
+  const [latestSubmitTime, setLatestSubmitTime] = useState(null);
+  const [depositAmount, setDepositAmount] = useState(null);
 
   const signer = UseEthersSigner();
+  const provider = signer ? signer.provider : null;
 
   const USDC = useMemo(() => {
     if(signer) {
@@ -28,8 +31,29 @@ const RegisterProviderPage = () => {
       );
     }
     return null;
-  }, [signer])
+  }, [signer]) 
+  const EchoOptimisticOracleRead = useMemo(() => {
+    if (provider) {
+      return new ethers.Contract(
+        EchoOptimisticOracleAddress,
+        EchoOptimisticOracleABI.abi,
+        provider
+      );
+    }
+    return null;
+  }, [provider]);
 
+  React.useEffect(() => {
+    (async () => {
+      try {
+        if (!isConnected || !EchoOptimisticOracleRead || !address) return;
+        const info = await EchoOptimisticOracleRead.dataProviderInfo(address);
+        setIsRegistered(Boolean(info?.valid));
+        setLatestSubmitTime(info?.latestSubmitTime ?? null);
+        setDepositAmount(info?.depositeAmount ?? null);
+      } catch {}
+    })();
+  }, [isConnected, EchoOptimisticOracleRead, address]);
   const EchoOptimisticOracle = useMemo(() => {
     if (signer) { 
       return new ethers.Contract(
@@ -77,9 +101,27 @@ const RegisterProviderPage = () => {
   const handleRefund = async() => {
     try{
       if (isConnected) {
-        const exit = await EchoOptimisticOracle.exit();
-        const exitTx = await exit.wait();
-        if(exitTx.status === 1) {
+        const info = await EchoOptimisticOracleRead.dataProviderInfo(address);
+        if (!info?.valid) {
+          alert('You are not a registered provider.');
+          return;
+        }
+        let cooling = 7 * 24 * 3600;
+        try {
+          const c = await EchoOptimisticOracleRead.coolingTime();
+          cooling = Number(c) || cooling;
+        } catch {}
+        const latest = Number(info.latestSubmitTime || 0);
+        const nowSec = Math.floor(Date.now() / 1000);
+        if (nowSec <= latest + cooling) {
+          const remain = Math.max(0, latest + cooling - nowSec);
+          const hrs = (remain / 3600).toFixed(1);
+          alert(`Cooling time has not elapsed (${hrs}h remaining).`);
+          return;
+        }
+        const tx = await EchoOptimisticOracle.exit();
+        const receipt = await tx.wait();
+        if(receipt.status === 1) {
           console.log("Refund success");
         } else {
           console.log("Refund fail");
@@ -143,6 +185,18 @@ const RegisterProviderPage = () => {
                   <span className="text-emerald-700">Status</span>
                   <span className={`font-semibold ${isRegistered ? 'text-green-600' : 'text-yellow-600'}`}>
                     {isRegistered ? 'Registered' : 'Not Registered'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
+                  <span className="text-emerald-700">Latest Submit</span>
+                  <span className="font-semibold text-emerald-700">
+                    {latestSubmitTime ? new Date((Number(latestSubmitTime) < 1e12 ? Number(latestSubmitTime) * 1000 : Number(latestSubmitTime))).toLocaleString() : 'N/A'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
+                  <span className="text-emerald-700">Deposit Amount</span>
+                  <span className="font-semibold text-emerald-700">
+                    {depositAmount ? ethers.formatUnits(depositAmount, 18) : '0'}
                   </span>
                 </div>
               </div>

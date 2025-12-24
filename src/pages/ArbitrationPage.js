@@ -387,14 +387,14 @@ const ArbitrationPage = () => {
             </div>
           ) : (
             <>
-              <div className="bg-white rounded-xl shadow-lg p-4 border border-emerald-100 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <div className="bg-white rounded-xl shadow-lg p-3 border border-emerald-100 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
                   <div>
-                    <label className="block text-sm text-emerald-700 mb-1">Category</label>
+                    <label className="block text-sm text-emerald-700 mb-0.5">Category</label>
                     <select
                       value={filterCategory}
                       onChange={(e) => setFilterCategory(e.target.value)}
-                      className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-1.5 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     >
                       <option value="all">All</option>
                       <option value="crypto">Crypto</option>
@@ -408,11 +408,11 @@ const ArbitrationPage = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm text-emerald-700 mb-1">Status</label>
+                    <label className="block text-sm text-emerald-700 mb-0.5">Status</label>
                     <select
                       value={filterStatus}
                       onChange={(e) => setFilterStatus(e.target.value)}
-                      className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-1.5 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     >
                       <option value="all">All</option>
                       <option value="active">Active</option>
@@ -422,17 +422,17 @@ const ArbitrationPage = () => {
                     </select>
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm text-emerald-700 mb-1">Search</label>
+                    <label className="block text-sm text-emerald-700 mb-0.5">Search</label>
                     <input
                       type="text"
                       value={searchText}
                       onChange={(e) => setSearchText(e.target.value)}
                       placeholder="Search question text…"
-                      className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-3 py-1.5 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     />
                   </div>
                 </div>
-                <div className="mt-3 flex items-center justify-between">
+                <div className="mt-2 flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <label className="inline-flex items-center">
                       <input
@@ -447,19 +447,19 @@ const ArbitrationPage = () => {
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={exportCSV}
-                      className="px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium"
+                      className="px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-medium"
                     >
                       Export CSV
                     </button>
                     <button
                       onClick={exportJSON}
-                      className="px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium"
+                      className="px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-medium"
                     >
                       Export JSON
                     </button>
                   </div>
                 </div>
-                <div className="mt-3 text-sm text-emerald-600">
+                <div className="mt-2 text-xs text-emerald-600">
                   Showing {displayMarkets.length} of {marketDataGroup.length}
                 </div>
               </div>
