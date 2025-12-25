@@ -58,13 +58,33 @@ const MarketCard = ({ market }) => {
 
     const [showVoteModal, setShowVoteModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errorOpen, setErrorOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const showError = (e, fallback) => {
+        try {
+            const raw = e && (e.shortMessage || e.reason || e.message) || fallback || "Unknown error";
+            const msg = String(raw || "").replace(/\s+/g, " ").trim();
+            setErrorMessage(msg.length > 200 ? msg.slice(0, 200) : msg);
+            setErrorOpen(true);
+        } catch {
+            setErrorMessage(fallback || "Unknown error");
+            setErrorOpen(true);
+        }
+        console.error(e);
+    };
 
     // 完善点 1: 确保 voteData 初始状态的 ID 为 null，并在打开模态框时设置
     const [voteData, setVoteData] = useState({
         id: null,
         dataSource: '',
-        // 随机数用于链上提交时的承诺 (commitment)，uint64 在 JS 的安全整数 (53 位) 范围内
-        randomNumber: Math.floor(Math.random() * 9007199254740991),
+        randomNumber: (() => {
+            const min = 1_000_000_000_000n;
+            const range = 9_000_000_000_000n;
+            const buf = new BigUint64Array(1);
+            crypto.getRandomValues(buf);
+            const r = buf[0] % range;
+            return Number(min + r);
+        })(),
         vote: null, // 'yes' or 'no'
     });
 
@@ -114,7 +134,14 @@ const MarketCard = ({ market }) => {
             ...prev,
             id: market.id,
             vote: null,
-            randomNumber: Math.floor(Math.random() * 9007199254740991), // 重新生成随机数，确保在安全整数范围内
+            randomNumber: (() => {
+                const min = 1_000_000_000_000n;
+                const range = 9_000_000_000_000n;
+                const buf = new BigUint64Array(1);
+                crypto.getRandomValues(buf);
+                const r = buf[0] % range;
+                return Number(min + r);
+            })(),
         }));
         setShowVoteModal(true);
     }
@@ -124,6 +151,10 @@ const MarketCard = ({ market }) => {
 
         if (!voteData.vote || !voteData.dataSource.trim() || !voteData.id) {
             alert("Please select a vote and provide a data source.");
+            return;
+        }
+        if (voteData.randomNumber < 1_000_000_000_000 || voteData.randomNumber >= 10_000_000_000_000) {
+            alert("Random number must be in [1000000000000, 9999999999999).");
             return;
         }
 
@@ -156,9 +187,7 @@ const MarketCard = ({ market }) => {
             setShowVoteModal(false);
             // 💡 提示：可以在这里添加一个回调来刷新 ArbitrationPage 的列表数据
         } catch (error) {
-            console.error('Submit data failed:', error);
-            const errorMessage = error.reason || error.message || "An unknown error occurred.";
-            alert(`Data submission failed. Error: ${errorMessage}`);
+            showError(error, "Submit failed");
         } finally {
             setIsSubmitting(false);
         }
@@ -285,13 +314,17 @@ const MarketCard = ({ market }) => {
                                         <input
                                             type="number"
                                             value={voteData.randomNumber}
-                                            onChange={(e) => setVoteData({ ...voteData, randomNumber: Math.min(parseInt(e.target.value) || 0, 9007199254740991) })}
+                                            onChange={(e) => {
+                                                const v = parseInt(e.target.value) || 0;
+                                                const clamped = Math.max(1_000_000_000_000, Math.min(v, 9_999_999_999_999));
+                                                setVoteData({ ...voteData, randomNumber: clamped });
+                                            }}
                                             className="w-full px-4 py-2 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                                             required
-                                            min="0"
-                                            max="9007199254740991"
+                                            min="1000000000000"
+                                            max="9999999999999"
                                         />
-                                        <p className="text-xs text-gray-500 mt-1">Used for a secure, hidden vote commitment.</p>
+                                        <p className="text-xs text-gray-500 mt-1">Range: 1000000000000–9999999999999 • Used for commitment.</p>
                                     </div>
 
                                     <div>
@@ -344,6 +377,28 @@ const MarketCard = ({ market }) => {
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {errorOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full">
+                        <div className="p-5">
+                            <div className="flex justify-between items-center mb-3">
+                                <div className="text-lg font-semibold text-red-600">Error</div>
+                                <button onClick={() => setErrorOpen(false)} className="text-emerald-600 hover:text-emerald-800">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div className="text-sm text-emerald-800">{errorMessage}</div>
+                            <div className="mt-5 flex justify-end">
+                                <button onClick={() => setErrorOpen(false)} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium">
+                                    OK
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

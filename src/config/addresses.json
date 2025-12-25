@@ -1,11 +1,20 @@
 {
+  "5003": {
+    "network": "mantle_testnet",
+    "USDC": "0xdFb9d901a28AAeb1b3Ecc59B87A2040Ec41c6564",
+    "AroundPoolFactory": "0xe47a27F2933CbE46e66d4025480f726D8dA64D6b",
+    "AroundMarket": "0x0a19B0e21941006675492E2803420B1921DcA949",
+    "EchoOptimisticOracle": "0x60DB3C168d58bc8343e987Eec524142fB8893662",
+    "AroundRouter": "0x832dDFFa978D7a41934610fc5Ee32A0Fcf68A652",
+    "AroundUIHelper": "0x33F483f1CCD8555734C80f48128689ae99BE0B4D"
+  },
   "421614": {
     "network": "arb_sepolia",
     "USDC": "0xB77a8A32e43E2b5d4a907E0C7d8a1BFa1f712910",
-    "AroundPoolFactory": "0x17Af6b7121f4d863C148f3fc65B72a98fE57A39E",
-    "AroundMarket": "0x901066881CB395A546780e3abCb0fa8a01e7254D",
-    "EchoOptimisticOracle": "0x9406dF9802ca85b9b2bc841007A103FD281f2dbB",
-    "AroundRouter": "0xCD88088a6f8Df619CE64b5e1E4Aa97BF2267F625",
-    "AroundUIHelper": "0x4834F3d740a261edB0a42acF7AD33816F09dd653"
+    "AroundPoolFactory": "0x65E763463501f296bCF6916746Ea1dFc1fa758A8",
+    "AroundMarket": "0x929F79c88F22b213D189eDB3ac237daeF41D0b2B",
+    "EchoOptimisticOracle": "0x9bFF0F2f735F63E5EC8d016E525Cb96579444FC9",
+    "AroundRouter": "0xA2B7028E504eEd267529A6BE8617d653527912c4",
+    "AroundUIHelper": "0x2C078804234196066c4D60f0B7976aC931C8c022"
   }
 }

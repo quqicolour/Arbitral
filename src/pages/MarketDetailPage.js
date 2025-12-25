@@ -137,7 +137,7 @@ export default function MarketDetailPage() {
   const [showChallenge, setShowChallenge] = useState(false);
   const [challengeEvidence, setChallengeEvidence] = useState("");
   const [challengeFee, setChallengeFee] = useState(null);
-  const [acting, setActing] = useState(false);
+  const [challenging, setChallenging] = useState(false);
 
   const openChallenge = useCallback(async () => {
     if (!echoRead) return;
@@ -149,9 +149,9 @@ export default function MarketDetailPage() {
   }, [echoRead]);
 
   const submitChallenge = useCallback(async () => {
-    if (!isConnected || !echoWrite || !usdc || !address || acting) return;
+    if (!isConnected || !echoWrite || !usdc || !address || challenging) return;
     if (!challengeEvidence || !id) return;
-    setActing(true);
+    setChallenging(true);
     try {
       const allowance = await usdc.allowance(address, EchoOptimisticOracleAddress);
       const need = challengeFee ?? 0n;
@@ -167,19 +167,33 @@ export default function MarketDetailPage() {
     } catch (e) {
       console.error(e);
     } finally {
-      setActing(false);
+      setChallenging(false);
     }
-  }, [isConnected, echoWrite, usdc, address, acting, challengeEvidence, id, challengeFee, reload]);
+  }, [isConnected, echoWrite, usdc, address, challenging, challengeEvidence, id, challengeFee, reload]);
 
   const [showSubmit, setShowSubmit] = useState(false);
   const [submitVote, setSubmitVote] = useState(null);
   const [submitSource, setSubmitSource] = useState("");
-  const [submitRand, setSubmitRand] = useState(Math.floor(Math.random() * 9007199254740991));
+  const [submitRand, setSubmitRand] = useState(() => {
+    const min = 1_000_000_000_000n;
+    const range = 9_000_000_000_000n;
+    const buf = new BigUint64Array(1);
+    crypto.getRandomValues(buf);
+    const r = buf[0] % range;
+    return Number(min + r);
+  });
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
 
   const openSubmit = useCallback(async () => {
     setShowSubmit(true);
-    setSubmitRand(Math.floor(Math.random() * 9007199254740991));
+    {
+      const min = 1_000_000_000_000n;
+      const range = 9_000_000_000_000n;
+      const buf = new BigUint64Array(1);
+      crypto.getRandomValues(buf);
+      const r = buf[0] % range;
+      setSubmitRand(Number(min + r));
+    }
     setSubmitVote(null);
     setSubmitSource("");
     try {
@@ -190,10 +204,12 @@ export default function MarketDetailPage() {
     } catch { }
   }, [echoRead, address, id]);
 
+  const [submitting, setSubmitting] = useState(false);
   const submitDataAction = useCallback(async () => {
-    if (!isConnected || !echoWrite || acting) return;
+    if (!isConnected || !echoWrite || submitting) return;
     if (!submitVote || !submitSource || !id) return;
-    setActing(true);
+    if (submitRand < 1_000_000_000_000 || submitRand >= 10_000_000_000_000) return;
+    setSubmitting(true);
     try {
       const isYes = submitVote === "yes";
       const tx = await echoWrite.submitData(
@@ -206,15 +222,60 @@ export default function MarketDetailPage() {
       setShowSubmit(false);
       reload();
     } catch (e) {
-      console.error(e);
+      showError(e, "Submit failed");
     } finally {
-      setActing(false);
+      setSubmitting(false);
     }
-  }, [isConnected, echoWrite, submitVote, submitSource, id, submitRand, reload]);
+  }, [isConnected, echoWrite, submitVote, submitSource, id, submitRand, reload, submitting]);
+  const [withdrawing, setWithdrawing] = useState(false);
+  const withdrawEarnAction = useCallback(async () => {
+    if (!isConnected || !echoWrite || withdrawing || !id) return;
+    setWithdrawing(true);
+    try {
+      console.log('%c🚀[id]-236:', 'color: #8d497b', id);
+
+      const tx = await echoWrite.withdrawEarn(BigInt(id));
+      await tx.wait();
+      reload();
+    } catch (e) {
+      showError(e, "Withdraw failed");
+    } finally {
+      setWithdrawing(false);
+    }
+  }, [isConnected, echoWrite, withdrawing, id, reload]);
   const [showExit, setShowExit] = useState(false);
   const [providerInfo, setProviderInfo] = useState(null);
   const [canExit, setCanExit] = useState(false);
   const [exitReason, setExitReason] = useState("");
+  const [isProvider, setIsProvider] = useState(false);
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const showError = useCallback((e, fallback) => {
+    try {
+      const raw = e && (e.shortMessage || e.reason || e.message) || fallback || "Unknown error";
+      const msg = String(raw || "").replace(/\s+/g, " ").trim();
+      setErrorMessage(msg.length > 200 ? msg.slice(0, 200) : msg);
+      setErrorOpen(true);
+    } catch {
+      setErrorMessage(fallback || "Unknown error");
+      setErrorOpen(true);
+    }
+    console.error(e);
+  }, []);
+  useEffect(() => {
+    (async () => {
+      try {
+        if (!isConnected || !echoRead || !address) {
+          setIsProvider(false);
+          return;
+        }
+        const info = await echoRead.dataProviderInfo(address);
+        setIsProvider(Boolean(info?.valid));
+      } catch {
+        setIsProvider(false);
+      }
+    })();
+  }, [isConnected, echoRead, address]);
   useEffect(() => {
     (async () => {
       if (!showExit) return;
@@ -253,20 +314,21 @@ export default function MarketDetailPage() {
       }
     })();
   }, [showExit, isConnected, echoRead, address]);
+  const [exiting, setExiting] = useState(false);
   const confirmExit = useCallback(async () => {
-    if (!isConnected || !echoWrite || acting || !canExit) return;
-    setActing(true);
+    if (!isConnected || !echoWrite || exiting || !canExit) return;
+    setExiting(true);
     try {
       const tx = await echoWrite.exit();
       await tx.wait();
       setShowExit(false);
       reload();
     } catch (e) {
-      console.error(e);
+      showError(e, "Exit failed");
     } finally {
-      setActing(false);
+      setExiting(false);
     }
-  }, [isConnected, echoWrite, acting, canExit, reload]);
+  }, [isConnected, echoWrite, exiting, canExit, reload]);
 
   return (
     <div className="max-w-6xl mx-auto fade-in">
@@ -286,22 +348,24 @@ export default function MarketDetailPage() {
               </div>
               <div className="flex items-center space-x-3">
                 <button
-                  onClick={reload}
-                  className="px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium"
+                  onClick={openSubmit}
+                  className="px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                  disabled={!isConnected}
                 >
-                  Refresh
+                  Submit
                 </button>
                 <button
                   onClick={openChallenge}
-                  className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium"
+                  className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                  disabled={!echoRead}
                 >
                   Challenge
                 </button>
                 <button
-                  onClick={openSubmit}
-                  className="px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium"
+                  onClick={reload}
+                  className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-emerald-700 rounded-lg text-sm font-medium border border-emerald-200"
                 >
-                  Submit
+                  Refresh
                 </button>
                 <button
                   onClick={() => setShowExit(true)}
@@ -335,7 +399,46 @@ export default function MarketDetailPage() {
               </div>
               <div className="p-3 bg-emerald-50 rounded-lg">
                 <div className="text-sm text-emerald-600">Oracle Earn</div>
-                <div className="text-lg font-semibold text-emerald-700">{fmt(oracle?.earn, decimals, 2)}</div>
+                <div className="flex items-center justify-between">
+                  <div className="text-lg font-semibold text-emerald-700">{fmt(oracle?.earn, decimals, 2)} {decimals === 6 ? 'USDC' : ''}</div>
+                  {(() => {
+                    const earnIsZero = (oracle?.earn ?? 0n) === 0n;
+                    const providersZero = providersCount === 0;
+                    const responsesZero = Number(opt?.responseCount || 0) === 0;
+                    const withdrawn = Number(oracle?.withdrawState) === 1;
+                    const notResolved = !(Number(oracle?.eventState) === 1 || Number(oracle?.eventState) === 2);
+                    const disabled = withdrawing || !isConnected || !echoWrite || withdrawn || !isProvider || earnIsZero || providersZero || responsesZero || notResolved;
+                    const reason = withdrawn
+                      ? 'Withdrawn'
+                      : !isProvider
+                        ? 'Not a provider'
+                        : earnIsZero
+                          ? 'No earnings'
+                          : providersZero
+                            ? 'No providers'
+                            : responsesZero
+                              ? 'No responses'
+                              : notResolved
+                                ? 'Event not resolved'
+                                : '';
+                    return (
+                      <div className="flex items-center">
+                        <button
+                          onClick={withdrawEarnAction}
+                          className="ml-3 px-3 py-1 bg-gray-800 hover:bg-gray-900 text-white rounded-lg text-xs font-medium disabled:opacity-50"
+                          disabled={disabled}
+                        >
+                          {reason === 'Withdrawn'
+                            ? 'Withdrawn'
+                            : (withdrawing ? 'Withdrawing…' : 'Withdraw Earn')}
+                        </button>
+                        {reason && reason !== 'Withdrawn' && (
+                          <span className="ml-2 text-xs text-emerald-600">{reason}</span>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
               </div>
             </div>
           </div>
@@ -356,7 +459,7 @@ export default function MarketDetailPage() {
                     <div className="p-3 bg-emerald-50 rounded-lg">
                       <div className="text-sm text-emerald-600">Challenger Fee</div>
                       <div className="text-lg font-semibold text-emerald-700">
-                        {challengeFee ? fmt(challengeFee, 18, 4) : "Loading..."}
+                        {challengeFee ? `${fmt(challengeFee, 6, 4)} USDC` : "Loading..."}
                       </div>
                     </div>
                     <div>
@@ -374,16 +477,16 @@ export default function MarketDetailPage() {
                     <button
                       onClick={() => setShowChallenge(false)}
                       className="px-4 py-2 text-emerald-600 hover:text-emerald-800 font-medium"
-                      disabled={acting}
+                      disabled={challenging}
                     >
                       Cancel
                     </button>
                     <button
                       onClick={submitChallenge}
                       className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-medium disabled:opacity-50"
-                      disabled={acting || !challengeEvidence}
+                      disabled={challenging || !challengeEvidence || !challengeFee}
                     >
-                      {acting ? "Submitting..." : "Confirm Challenge"}
+                      {challenging ? "Submitting..." : "Confirm Challenge"}
                     </button>
                   </div>
                 </div>
@@ -442,27 +545,32 @@ export default function MarketDetailPage() {
                       <input
                         type="number"
                         value={submitRand}
-                        onChange={(e) => setSubmitRand(Math.min(parseInt(e.target.value) || 0, 9007199254740991))}
+                        onChange={(e) => {
+                          const v = parseInt(e.target.value) || 0;
+                          const clamped = Math.max(1_000_000_000_000, Math.min(v, 9_999_999_999_999));
+                          setSubmitRand(clamped);
+                        }}
                         className="w-full px-3 py-2 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                        min="0"
-                        max="9007199254740991"
+                        min="1000000000000"
+                        max="9999999999999"
                       />
+                      <div className="text-xs text-emerald-600 mt-1">Range: 1000000000000–9999999999999</div>
                     </div>
                   </div>
                   <div className="mt-6 flex justify-end space-x-4">
                     <button
                       onClick={() => setShowSubmit(false)}
                       className="px-4 py-2 text-emerald-600 hover:text-emerald-800 font-medium"
-                      disabled={acting}
+                      disabled={submitting}
                     >
                       Cancel
                     </button>
                     <button
                       onClick={submitDataAction}
                       className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-medium disabled:opacity-50"
-                      disabled={acting || !submitVote || !submitSource || alreadySubmitted}
+                      disabled={submitting || !submitVote || !submitSource || alreadySubmitted || submitRand < 1_000_000_000_000 || submitRand >= 10_000_000_000_000}
                     >
-                      {acting ? "Submitting..." : "Confirm Submit"}
+                      {submitting ? "Submitting..." : "Confirm Submit"}
                     </button>
                   </div>
                 </div>
@@ -503,16 +611,16 @@ export default function MarketDetailPage() {
                     <button
                       onClick={() => setShowExit(false)}
                       className="px-4 py-2 text-emerald-600 hover:text-emerald-800 font-medium"
-                      disabled={acting}
+                      disabled={exiting}
                     >
                       Cancel
                     </button>
                     <button
                       onClick={confirmExit}
                       className="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium disabled:opacity-50"
-                      disabled={acting || !canExit}
+                      disabled={exiting || !canExit}
                     >
-                      {acting ? "Processing..." : "Confirm Exit"}
+                      {exiting ? "Processing..." : "Confirm Exit"}
                     </button>
                   </div>
                 </div>
@@ -629,6 +737,28 @@ export default function MarketDetailPage() {
             )}
           </div>
         </>
+      )}
+      {errorOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full">
+            <div className="p-5">
+              <div className="flex justify-between items-center mb-3">
+                <div className="text-lg font-semibold text-red-600">Error</div>
+                <button onClick={() => setErrorOpen(false)} className="text-emerald-600 hover:text-emerald-800">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="text-sm text-emerald-800">{errorMessage}</div>
+              <div className="mt-5 flex justify-end">
+                <button onClick={() => setErrorOpen(false)} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium">
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

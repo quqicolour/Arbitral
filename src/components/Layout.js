@@ -1,10 +1,50 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
+import { ethers } from 'ethers';
+import EchoOptimisticOracleABI from '../abis/EchoOptimisticOracle.json';
+import { EchoOptimisticOracleAddress } from '../address.js';
+import { UseEthersSigner } from '../config/EtherAdapter.js';
 
 const Layout = ({ children }) => {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
+  const signer = UseEthersSigner();
+  const provider = signer ? signer.provider : null;
+  const echoRead = useMemo(() => {
+    if (!provider) return null;
+    return new ethers.Contract(EchoOptimisticOracleAddress, EchoOptimisticOracleABI.abi, provider);
+  }, [provider]);
+  const [providerStatus, setProviderStatus] = useState('');
+  useEffect(() => {
+    (async () => {
+      if (!isConnected || !echoRead || !address) {
+        setProviderStatus('');
+        return;
+      }
+      try {
+        const info = await echoRead.dataProviderInfo(address);
+        if (!info?.valid) {
+          setProviderStatus('Not Registered');
+          return;
+        }
+        let cooling = 7 * 24 * 3600;
+        try {
+          const c = await echoRead.coolingTime();
+          cooling = Number(c) || cooling;
+        } catch {}
+        const latest = Number(info.latestSubmitTime || 0);
+        const nowSec = Math.floor(Date.now() / 1000);
+        if (nowSec > latest + cooling) {
+          setProviderStatus('Active');
+        } else {
+          setProviderStatus('Cooling');
+        }
+      } catch {
+        setProviderStatus('Unknown');
+      }
+    })();
+  }, [isConnected, echoRead, address]);
 
   return (
     <div className="min-h-screen">
@@ -19,34 +59,34 @@ const Layout = ({ children }) => {
                 <span className="text-xl font-bold text-emerald-700">
                   Optimistic Arbitration
                 </span>
-              </Link>
+                </Link>
 
-              <div className="hidden md:flex items-center space-x-6">
-                <Link
-                  to="/"
-                  className="text-emerald-600 hover:text-emerald-800 font-medium transition-colors"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  to="/arbitration"
-                  className="text-emerald-600 hover:text-emerald-800 font-medium transition-colors"
-                >
-                  Arbitration Markets
-                </Link>
-                <Link
-                  to="/register-provider"
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                >
-                  Become a Provider
-                </Link>
+                <div className="hidden md:flex items-center space-x-6">
+                  <Link
+                    to="/"
+                    className="text-emerald-600 hover:text-emerald-800 font-medium transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    to="/arbitration"
+                    className="text-emerald-600 hover:text-emerald-800 font-medium transition-colors"
+                  >
+                    Arbitration Markets
+                  </Link>
+                  <Link
+                    to="/register-provider"
+                  className="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm hover:shadow-md hover:from-emerald-600 hover:to-teal-600 transition-all"
+                  >
+                    Become a Provider
+                  </Link>
+                </div>
               </div>
-            </div>
 
             <div className="flex items-center space-x-4">
-              {isConnected && (
+              {isConnected && providerStatus && (
                 <div className="hidden sm:block px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
-                  Provider Status: <span className="font-semibold">Active</span>
+                  Provider Status: <span className="font-semibold">{providerStatus}</span>
                 </div>
               )}
               <ConnectButton 
