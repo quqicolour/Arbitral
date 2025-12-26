@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAccount } from 'wagmi';
-import { UseEthersSigner } from "../config/EtherAdapter.js";
+import { useEthers } from "../context/EthersContext.jsx";
 import { ethers } from "ethers";
 
-import { EchoOptimisticOracleAddress, USDCAddress } from "../address.js";
+import { EchoOptimisticOracleAddress as StaticOracle } from "../address.js";
 import EchoOptimisticOracleABI from "../abis/EchoOptimisticOracle.json";
 
 // 辅助函数：将 BigInt/Wei 格式化
@@ -54,7 +54,7 @@ const oracleStateText = (s) => {
 const MarketCard = ({ market }) => {
     const navigate = useNavigate();
     const { isConnected } = useAccount();
-    const signer = UseEthersSigner();
+    const { signer, addresses } = useEthers();
 
     const [showVoteModal, setShowVoteModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -167,7 +167,7 @@ const MarketCard = ({ market }) => {
 
         try {
             const EchoOptimisticOracleContract = new ethers.Contract(
-                EchoOptimisticOracleAddress,
+                addresses?.EchoOptimisticOracle || StaticOracle,
                 EchoOptimisticOracleABI.abi,
                 signer
             );
@@ -198,13 +198,13 @@ const MarketCard = ({ market }) => {
     const questTitle = (oracleQuest || market.quest || `Market #${String(market.id)}`).toString();
     const maxTitleLen = 24;
     const questDisplay = questTitle.length > maxTitleLen ? `${questTitle.slice(0, maxTitleLen)}…` : questTitle;
-    const collateralDecimals = Number(market.decimals ?? (market.poolInfo?.collateral && USDCAddress && market.poolInfo.collateral.toLowerCase() === USDCAddress.toLowerCase() ? 6 : 18));
+    const collateralDecimals = Number(market.decimals ?? (market.poolInfo?.collateral && addresses?.USDC && market.poolInfo.collateral.toLowerCase() === addresses.USDC.toLowerCase() ? 6 : 18));
     const volumeSource = market.liqudityInfo?.volume ?? market.liqudityInfo?.tradeCollateralAmount;
     const totalVolumeRaw = formatBigNumber(volumeSource, 18, 2);
     const totalVolumeNum = Number.parseFloat(totalVolumeRaw || '0');
     const totalVolumeK = (totalVolumeNum / 1000).toFixed(2);
     const participants = market.participants?.toString() || '0';
-    const collateralSymbol = market.poolInfo?.collateral && USDCAddress && market.poolInfo.collateral.toLowerCase() === USDCAddress.toLowerCase() ? "USDC" : "Token";
+    const collateralSymbol = market.poolInfo?.collateral && addresses?.USDC && market.poolInfo.collateral.toLowerCase() === addresses.USDC.toLowerCase() ? "USDC" : "Token";
     const formattedEndTime = market.endTime
         ? (() => {
             const ms = toMsTimestamp(market.endTime);

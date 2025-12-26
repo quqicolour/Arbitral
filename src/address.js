@@ -9,9 +9,9 @@ const resolveChainId = () => {
       return String(parseInt(hex, 16));
     } catch { }
   }
-  return "421614";
+  return "5003";
 };
-const current = addresses[resolveChainId()] || addresses["421614"];
+const current = addresses[resolveChainId()] || addresses["5003"];
 const USDCAddress = current.USDC;
 const AroundPoolFactoryAddress = current.AroundPoolFactory;
 const AroundMarketAddress = current.AroundMarket;

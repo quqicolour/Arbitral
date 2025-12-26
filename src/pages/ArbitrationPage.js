@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import MarketCard from "../components/MarketCard";
 import Pagination from "../components/Pagination";
-import { UseEthersSigner } from "../config/EtherAdapter.js";
+import { useEthers } from "../context/EthersContext.jsx";
 import { useSearchParams } from "react-router-dom";
 
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 
-import { AroundPoolFactoryAddress, AroundUIHelperAddress, AroundMarketAddress, USDCAddress } from "../address.js";
+import { AroundMarketAddress as StaticAroundMarket } from "../address.js";
 
 import { GetMarketId } from "../contracts/AroundPoolFactory.js";
 import { GetMarketsData } from "../contracts/AroundUIHelper.js";
@@ -36,30 +36,17 @@ const ArbitrationPage = () => {
   const fetchTokenRef = useRef(0);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const signer = UseEthersSigner();
-  const provider = signer ? signer.provider : null;
+  const { provider, signer, addresses, chainId } = useEthers();
 
   const AroundPoolFactory = useMemo(() => {
-    if (provider) {
-      return new ethers.Contract(
-        AroundPoolFactoryAddress,
-        AroundPoolFactoryABI.abi,
-        provider
-      );
-    }
-    return null;
-  }, [provider]);
+    if (!provider || !addresses?.AroundPoolFactory) return null;
+    return new ethers.Contract(addresses.AroundPoolFactory, AroundPoolFactoryABI.abi, provider);
+  }, [provider, addresses]);
 
   const AroundUIHelper = useMemo(() => {
-    if (provider) {
-      return new ethers.Contract(
-        AroundUIHelperAddress,
-        AroundUIHelperABI.abi,
-        provider
-      );
-    }
-    return null;
-  }, [provider]);
+    if (!provider || !addresses?.AroundUIHelper) return null;
+    return new ethers.Contract(addresses.AroundUIHelper, AroundUIHelperABI.abi, provider);
+  }, [provider, addresses]);
 
   const FetchTotalMarketCount = useCallback(async () => {
     if (!AroundPoolFactory) return;
@@ -114,8 +101,8 @@ const ArbitrationPage = () => {
           noPriceGroup
         ] = await GetMarketsData(helperContract, BigInt(page - 1), PAGE_SIZE);
       } catch (err) {
-        const am = new ethers.Contract(AroundMarketAddress, AroundMarketABI.abi, provider);
-        const pf = new ethers.Contract(AroundPoolFactoryAddress, AroundPoolFactoryABI.abi, provider);
+        const am = new ethers.Contract(addresses?.AroundMarket || StaticAroundMarket, AroundMarketABI.abi, provider);
+        const pf = new ethers.Contract(addresses?.AroundPoolFactory, AroundPoolFactoryABI.abi, provider);
         const fallbackPool = [];
         const fallbackMarket = [];
         const fallbackLiq = [];
@@ -172,7 +159,7 @@ const ArbitrationPage = () => {
           decimals: (() => {
             const c = poolInfoGroup[index]?.collateral || marketInfo.collateral;
             const key = c ? String(c).toLowerCase() : '';
-            if (USDCAddress && c && String(USDCAddress).toLowerCase() === key) return 6;
+            if (addresses?.USDC && c && String(addresses.USDC).toLowerCase() === key) return 6;
             return (decimalsMap[key] ?? 18);
           })(),
         };
@@ -236,6 +223,12 @@ const ArbitrationPage = () => {
       setCurrentTotalPage(1);
     }
   }, [isConnected, AroundPoolFactory, AroundUIHelper, FetchTotalMarketCount]);
+  useEffect(() => {
+    pageCache.current.clear();
+    if (isConnected && AroundPoolFactory && AroundUIHelper) {
+      FetchTotalMarketCount();
+    }
+  }, [chainId]);
 
 
   useEffect(() => {
@@ -254,7 +247,7 @@ const ArbitrationPage = () => {
 
   useEffect(() => {
     pageCache.current.clear();
-  }, [totalMarketCount]);
+  }, [totalMarketCount, chainId]);
 
   useEffect(() => {
     const sp = Number(searchParams.get('page') || FIRST_PAGE);

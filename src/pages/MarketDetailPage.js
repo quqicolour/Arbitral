@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { useAccount } from "wagmi";
-import { UseEthersSigner } from "../config/EtherAdapter.js";
+import { useEthers } from "../context/EthersContext.jsx";
 import { ethers } from "ethers";
-import { AroundUIHelperAddress, USDCAddress } from "../address.js";
+import { EchoOptimisticOracleAddress } from "../address.js";
 import AroundUIHelperABI from "../abis/AroundUIHelper.json";
 import EchoOptimisticOracleABI from "../abis/EchoOptimisticOracle.json";
-import { EchoOptimisticOracleAddress } from "../address.js";
 import ERC20ABI from "../abis/ERC20.json";
 
 const fmt = (v, d = 18, f = 2) => {
@@ -33,29 +32,34 @@ export default function MarketDetailPage() {
   const [oracleData, setOracleData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [decimals, setDecimals] = useState(18);
-  const signer = UseEthersSigner();
-  const provider = signer ? signer.provider : null;
+  const { signer, provider, addresses, chainId } = useEthers();
   const { isConnected, address } = useAccount();
 
   const helper = useMemo(() => {
     if (!provider) return null;
-    return new ethers.Contract(AroundUIHelperAddress, AroundUIHelperABI.abi, provider);
-  }, [provider]);
+    const addr = addresses?.AroundUIHelper;
+    if (!addr) return null;
+    return new ethers.Contract(addr, AroundUIHelperABI.abi, provider);
+  }, [provider, addresses]);
 
   const echoRead = useMemo(() => {
     if (!provider) return null;
-    return new ethers.Contract(EchoOptimisticOracleAddress, EchoOptimisticOracleABI.abi, provider);
-  }, [provider]);
+    const oracleAddr = addresses?.EchoOptimisticOracle || EchoOptimisticOracleAddress;
+    if (!oracleAddr) return null;
+    return new ethers.Contract(oracleAddr, EchoOptimisticOracleABI.abi, provider);
+  }, [provider, addresses]);
 
   const echoWrite = useMemo(() => {
     if (!signer) return null;
-    return new ethers.Contract(EchoOptimisticOracleAddress, EchoOptimisticOracleABI.abi, signer);
-  }, [signer]);
+    const oracleAddr = addresses?.EchoOptimisticOracle || EchoOptimisticOracleAddress;
+    if (!oracleAddr) return null;
+    return new ethers.Contract(oracleAddr, EchoOptimisticOracleABI.abi, signer);
+  }, [signer, addresses]);
 
   const usdc = useMemo(() => {
-    if (!signer || !USDCAddress) return null;
-    return new ethers.Contract(USDCAddress, ERC20ABI.abi, signer);
-  }, [signer]);
+    if (!signer || !addresses?.USDC) return null;
+    return new ethers.Contract(addresses.USDC, ERC20ABI.abi, signer);
+  }, [signer, addresses]);
 
   const reload = useCallback(async () => {
     if (!helper || !id) return;
@@ -76,13 +80,13 @@ export default function MarketDetailPage() {
 
   useEffect(() => {
     reload();
-  }, [reload]);
+  }, [reload, chainId, address]);
 
   useEffect(() => {
     const c = data?.thisPoolInfo?.collateral;
     const key = c ? String(c).toLowerCase() : '';
     if (!c) return;
-    if (USDCAddress && key === String(USDCAddress).toLowerCase()) {
+    if (addresses?.USDC && key === String(addresses.USDC).toLowerCase()) {
       setDecimals(6);
       return;
     }
@@ -94,7 +98,7 @@ export default function MarketDetailPage() {
         setDecimals(18);
       }
     })();
-  }, [data, helper]);
+  }, [data, helper, addresses]);
 
   const quest = (passedMarket?.title) || passedMarket?.quest || data?.thisPoolInfo?.quest || data?.thisOracleInfo?.quest || "";
   const [titleExpanded, setTitleExpanded] = useState(false);
@@ -153,10 +157,11 @@ export default function MarketDetailPage() {
     if (!challengeEvidence || !id) return;
     setChallenging(true);
     try {
-      const allowance = await usdc.allowance(address, EchoOptimisticOracleAddress);
+      const oracleAddr = addresses?.EchoOptimisticOracle || EchoOptimisticOracleAddress;
+      const allowance = await usdc.allowance(address, oracleAddr);
       const need = challengeFee ?? 0n;
       if (allowance < need) {
-        const tx = await usdc.approve(EchoOptimisticOracleAddress, need);
+        const tx = await usdc.approve(oracleAddr, need);
         await tx.wait();
       }
       const c = await echoWrite.challenge(BigInt(id), String(challengeEvidence));

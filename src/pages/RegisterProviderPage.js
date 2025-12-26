@@ -2,10 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { useAccount, useContractWrite } from 'wagmi';
 import { parseEther } from 'viem';
 
-import { UseEthersSigner } from "../config/EtherAdapter.js";
+import { useEthers } from "../context/EthersContext.jsx";
 import { ethers } from "ethers";
 
-import { EchoOptimisticOracleAddress, USDCAddress } from "../address.js";
+import { EchoOptimisticOracleAddress as StaticOracle } from "../address.js";
 import EchoOptimisticOracleABI from "../abis/EchoOptimisticOracle.json";
 import ERC20ABI from "../abis/ERC20.json";
 
@@ -19,29 +19,28 @@ const RegisterProviderPage = () => {
   const [latestSubmitTime, setLatestSubmitTime] = useState(null);
   const [depositAmount, setDepositAmount] = useState(null);
 
-  const signer = UseEthersSigner();
-  const provider = signer ? signer.provider : null;
+  const { signer, provider, addresses } = useEthers();
 
   const USDC = useMemo(() => {
     if(signer) {
       return new ethers.Contract(
-        USDCAddress,
+        addresses?.USDC,
         ERC20ABI.abi,
         signer
       );
     }
     return null;
-  }, [signer]) 
+  }, [signer, addresses]) 
   const EchoOptimisticOracleRead = useMemo(() => {
     if (provider) {
       return new ethers.Contract(
-        EchoOptimisticOracleAddress,
+        addresses?.EchoOptimisticOracle || StaticOracle,
         EchoOptimisticOracleABI.abi,
         provider
       );
     }
     return null;
-  }, [provider]);
+  }, [provider, addresses]);
 
   React.useEffect(() => {
     (async () => {
@@ -55,24 +54,20 @@ const RegisterProviderPage = () => {
     })();
   }, [isConnected, EchoOptimisticOracleRead, address]);
   const EchoOptimisticOracle = useMemo(() => {
-    if (signer) { 
-      return new ethers.Contract(
-        EchoOptimisticOracleAddress,
-        EchoOptimisticOracleABI.abi,
-        signer 
-      );
-    }
-    return null;
-  }, [signer]); 
+    if (!signer) return null;
+    const oracleAddr = addresses?.EchoOptimisticOracle || StaticOracle;
+    if (!oracleAddr) return null;
+    return new ethers.Contract(oracleAddr, EchoOptimisticOracleABI.abi, signer);
+  }, [signer, addresses]); 
 
   const handleRegister = async() => {
     try{
       if (isConnected) {
         const currentAddress = await signer.getAddress();
         //approve
-        const allowance = await USDC.allowance(currentAddress, EchoOptimisticOracleAddress);
+        const allowance = await USDC.allowance(currentAddress, addresses?.EchoOptimisticOracle || StaticOracle);
         if(allowance < RegisterFee) {
-          const approve = await USDC.approve(EchoOptimisticOracleAddress, RegisterFee);
+          const approve = await USDC.approve(addresses?.EchoOptimisticOracle || StaticOracle, RegisterFee);
           const approveTx = await approve.wait();
           if(approveTx.status === 1) {
             console.log("Approve success");

@@ -4,39 +4,27 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-// import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
-// import { WagmiProvider } from 'wagmi'
-// import { okxWallet, zerionWallet, walletConnectWallet, safeWallet } from '@rainbow-me/rainbowkit/wallets'
-// import { arbitrumSepolia, mantleSepoliaTestnet} from 'wagmi/chains'
-// import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { WagmiProvider } from 'wagmi'
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import { wagmiConfig } from './config/wagmi'
+import { EthersProvider, EthersAutoReload } from './context/EthersContext.jsx'
 
-// const cuurent_projectId = process.env.REACT_APP_WALLET_CONNECT_PROJECT_ID;
-
-// const config = getDefaultConfig({
-//   appName: 'Around Arbitral',
-//   projectId: cuurent_projectId,
-//   chains: [arbitrumSepolia, mantleSepoliaTestnet],
-//   wallets: [
-//     {
-//       groupName: 'Preferred',
-//       wallets: [okxWallet, zerionWallet, walletConnectWallet, safeWallet],
-//     },
-//   ],
-//   ssr: false, // true if your dapp uses server-side rendering.
-// });
-// const queryClient = new QueryClient();
+const queryClient = new QueryClient();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    {/* <WagmiProvider config={config}>
+    <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider coolMode = {true}>
-          <App />
+        <RainbowKitProvider coolMode={true}>
+          <EthersProvider>
+            <EthersAutoReload />
+            <App />
+          </EthersProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
-    </WagmiProvider> */}
-    <App />
+    </WagmiProvider>
   </React.StrictMode>
 );
 
