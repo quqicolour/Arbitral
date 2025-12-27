@@ -4,17 +4,18 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import EchoOptimisticOracleABI from '../abis/EchoOptimisticOracle.json';
-import { EchoOptimisticOracleAddress } from '../address.js';
-import { UseEthersSigner } from '../config/EtherAdapter.js';
+import { EchoOptimisticOracleAddress as StaticOracle } from '../address.js';
+import { useEthers } from '../context/EthersContext.jsx';
 
 const Layout = ({ children }) => {
   const { isConnected, address } = useAccount();
-  const signer = UseEthersSigner();
-  const provider = signer ? signer.provider : null;
+  const { provider, addresses } = useEthers();
   const echoRead = useMemo(() => {
     if (!provider) return null;
-    return new ethers.Contract(EchoOptimisticOracleAddress, EchoOptimisticOracleABI.abi, provider);
-  }, [provider]);
+    const oracleAddr = addresses?.EchoOptimisticOracle || StaticOracle;
+    if (!oracleAddr) return null;
+    return new ethers.Contract(oracleAddr, EchoOptimisticOracleABI.abi, provider);
+  }, [provider, addresses]);
   const [providerStatus, setProviderStatus] = useState('');
   useEffect(() => {
     (async () => {
@@ -32,7 +33,7 @@ const Layout = ({ children }) => {
         try {
           const c = await echoRead.coolingTime();
           cooling = Number(c) || cooling;
-        } catch {}
+        } catch { }
         const latest = Number(info.latestSubmitTime || 0);
         const nowSec = Math.floor(Date.now() / 1000);
         if (nowSec > latest + cooling) {
@@ -59,29 +60,29 @@ const Layout = ({ children }) => {
                 <span className="text-xl font-bold text-emerald-700">
                   Optimistic Arbitration
                 </span>
-                </Link>
+              </Link>
 
-                <div className="hidden md:flex items-center space-x-6">
-                  <Link
-                    to="/"
-                    className="text-emerald-600 hover:text-emerald-800 font-medium transition-colors"
-                  >
-                    Dashboard
-                  </Link>
-                  <Link
-                    to="/arbitration"
-                    className="text-emerald-600 hover:text-emerald-800 font-medium transition-colors"
-                  >
-                    Arbitration Markets
-                  </Link>
-                  <Link
-                    to="/register-provider"
+              <div className="hidden md:flex items-center space-x-6">
+                <Link
+                  to="/"
+                  className="text-emerald-600 hover:text-emerald-800 font-medium transition-colors"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  to="/arbitration"
+                  className="text-emerald-600 hover:text-emerald-800 font-medium transition-colors"
+                >
+                  Arbitration Markets
+                </Link>
+                <Link
+                  to="/register-provider"
                   className="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm hover:shadow-md hover:from-emerald-600 hover:to-teal-600 transition-all"
-                  >
-                    Become a Provider
-                  </Link>
-                </div>
+                >
+                  Become a Provider
+                </Link>
               </div>
+            </div>
 
             <div className="flex items-center space-x-4">
               {isConnected && providerStatus && (
@@ -89,7 +90,7 @@ const Layout = ({ children }) => {
                   Provider Status: <span className="font-semibold">{providerStatus}</span>
                 </div>
               )}
-              <ConnectButton 
+              <ConnectButton
                 showBalance={false}
                 chainStatus="icon"
                 accountStatus="full"
